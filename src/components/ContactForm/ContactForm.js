@@ -2,14 +2,20 @@ import { useState} from 'react';
 import { v4 as uuid } from 'uuid';
 import s from './ContactForm.module.css';
 
-const ContactForm = (prop) => {
+import { useDispatch, useSelector } from 'react-redux/es/exports';
+import { addContact } from '../../redux/store';
+
+const ContactForm = () => {
   const [name, setName] = useState('');
   const [number, setNumber] = useState('');
+
+  const contactsList = useSelector(state => state.contacts);
+  const dispatch = useDispatch();
 
   //writing data from input
   const handleChange = ({ target }) => {
     const { name, value } = target;
-    console.log(name, value, target);
+
     switch (name) {
       case 'name':
         setName(value);
@@ -27,6 +33,15 @@ const ContactForm = (prop) => {
     setNumber('');
   };
   
+const checkNewContacts = (data) => {
+    const name = data.name.toLowerCase();
+    const sameContact = contactsList.some(contact => contact.name.toLowerCase().includes(name));
+    if (sameContact) {
+      return alert(`${data.name} is already in your contacts`)
+  }
+  return true;
+  };
+
   //collecting and forwarding data to obj
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -36,8 +51,11 @@ const ContactForm = (prop) => {
       name: name,
       number: number
     };
-    
-    prop.addNewContacts(obj);
+
+    if (checkNewContacts(obj)){
+       dispatch(addContact(obj));
+    };
+
     resetForm();
   };
 
@@ -80,7 +98,7 @@ const ContactForm = (prop) => {
       <button
         className={s.addBtn}
         type="submit"
-        onSubmit={handleSubmit}>
+      >
         Add contact
       </button>
 

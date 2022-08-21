@@ -8,6 +8,8 @@
 *createSlice()*: accepts an object of reducer functions, a slice name, and an initial state value, and automatically generates a slice reducer with corresponding action creators and action types.
 3. src -> create "redux" folder -> store.js
 
+# REDUX_PERSIST
+npm i redux-persist
 
 <input
   type="text"
