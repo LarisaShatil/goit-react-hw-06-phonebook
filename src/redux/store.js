@@ -1,4 +1,4 @@
-import { configureStore, getDefaultMiddleware, createReducer, createAction } from '@reduxjs/toolkit';
+import { configureStore,  combineReducers } from '@reduxjs/toolkit';
 import {
   persistStore,
   FLUSH,
@@ -7,33 +7,39 @@ import {
   PERSIST,
   PURGE,
   REGISTER,
-} from 'redux-persist'
-// import { persistedClicksReducer } from './clicksSlice';
-import { defaultContacts } from '../components/defaultContactList';
+} from 'redux-persist';
+import { persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
+import { contactsReducer } from './contactsSlice';
+import { filterReducer } from './filterSlice';
 
-const initialState = {
-  contacts: {
-    // items: [defaultContacts],
-    items: [],
-    filter: '' 
-  }
+
+const persistConfig = {
+  key: 'root',
+  storage,
 };
 
-
-export const addContact = createAction('contacts/addContact')
-export const deleteContact = createAction('contacts/deleteContact')
-
-const contactReducer = createReducer(defaultContacts, {
-  [addContact]: (state, action) => [ action.payload, ...state],
-  [deleteContact]: (state, action) => {
-    return state.filter((item) => item.id !== action.payload)
-  }
+const rootReducer = combineReducers({
+  contacts: contactsReducer,
+  filter: filterReducer,
 });
+
+const persistedReducer = persistReducer(persistConfig, rootReducer);
 
 export const store = configureStore({
-  reducer: {
-contacts: contactReducer
-  },
-  initialState,
+  reducer: persistedReducer,
+   middleware(getDefaultMiddleware){
+    return getDefaultMiddleware({
+      serializableCheck: {
+        ignoredActions: [FLUSH,
+          REHYDRATE,
+          PAUSE,
+          PERSIST,
+          PURGE,
+          REGISTER,]
+      },
+    })
+  }
 });
+//local storage
+export const persistor = persistStore(store);

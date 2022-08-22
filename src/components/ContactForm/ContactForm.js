@@ -3,7 +3,7 @@ import { v4 as uuid } from 'uuid';
 import s from './ContactForm.module.css';
 
 import { useDispatch, useSelector } from 'react-redux/es/exports';
-import { addContact } from '../../redux/store';
+import { addContact } from '../../redux/contactsSlice';
 
 const ContactForm = () => {
   const [name, setName] = useState('');
@@ -12,7 +12,7 @@ const ContactForm = () => {
   const contactsList = useSelector(state => state.contacts);
   const dispatch = useDispatch();
 
-  //writing data from input
+  //taking data from input
   const handleChange = ({ target }) => {
     const { name, value } = target;
 
